@@ -31,7 +31,9 @@ def open_pdf(path):
                     line = line[0].split(" ", 1) + line[1:2] + line[4:]
 
                     # Remove non-numeric characters and replace comma with dot for decimal point
-                    line[1] = "".join(char for char in line[1] if char.isdigit() or char in ",.")
+                    line[1] = "".join(
+                        char for char in line[1] if char.isdigit() or char in ",."
+                    )
                     line[1] = line[1].replace(",", ".")
                     # Convert the cleaned string to a float
                     line[1] = float(line[1])
@@ -53,5 +55,5 @@ def open_pdf(path):
         return f"Пополнения карты: {accruals} КЗТ\nРасходы по карте: {withdrawals} КЗТ"
 
 
-res = open_pdf("kaspi_bank/kaspi_bank_sep22-sep23.pdf")
+res = open_pdf("kaspi_bank_DEC_2023/kaspi_bank_sep22-sep23.pdf")
 print(res)
