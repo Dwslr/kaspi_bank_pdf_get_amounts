@@ -13,7 +13,8 @@ def kzt_to_rub(path):
         for line in content:
             line = [elem.strip() for elem in line.split("\t")[:2]]
             date = datetime.strptime(line[0], "%m/%d/%Y")
-            curr_d[date] = round(float(line[1]), 2)
+            week = date.strftime("%W-%Y")
+            curr_d[week] = round(float(line[1]), 2)
 
         return curr_d
 
@@ -65,19 +66,8 @@ def open_pdf(path):
 
         for line in all_lines:
             line = line[:4]
-            if curr_d1.get(line[0]) is not None:
-                rub = round(
-                    line[1] / curr_d1.get(line[0]), 2
-                )  # there is no available data for currencies on weekends
-            if curr_d1.get(line[0] - timedelta(days=1)) is not None:
-                rub = round(
-                    line[1] / curr_d1.get(line[0] - timedelta(days=1)), 2
-                )  # ITS WRONG?!
-            else:
-                rub = round(
-                    line[1] / curr_d1.get(line[0] - timedelta(days=3)), 2
-                )  # ITS WRONG?!
 
+            rub = round(line[1] / curr_d1.get(line[0].strftime("%W-%Y")), 2)
             line.append(rub)
 
             if line[2].lower() == "пополнение":
