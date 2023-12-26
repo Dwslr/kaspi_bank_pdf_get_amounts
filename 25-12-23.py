@@ -1,5 +1,24 @@
 import PyPDF2
-from re import compile, match, sub
+from re import compile
+
+from datetime import datetime
+
+
+def kzt_to_rub(path):
+    with open(path, "r") as txt:
+        content = txt.readlines()
+
+        cur_d = {}
+
+        for line in content:
+            line = [elem.strip() for elem in line.split("\t")[:2]]
+            date = datetime.strptime(line[0], "%m/%d/%Y")
+            cur_d[date.month] = round(float(line[1]), 2)
+
+        return cur_d
+
+
+cur_d1 = kzt_to_rub("kaspi_bank_DEC_2023/rub-kzt-curr.txt")
 
 
 def open_pdf(path):
@@ -24,7 +43,6 @@ def open_pdf(path):
             lines = page.extract_text().splitlines()
 
             # Add lines to the overall list
-            new_line = []
             for line in lines:
                 if date_pattern.match(line):
                     line = [el.strip() for el in line.split("  ")]
@@ -38,21 +56,27 @@ def open_pdf(path):
                     # Convert the cleaned string to a float
                     line[1] = float(line[1])
 
+                    line[0] = datetime.strptime(line[0], "%d.%m.%y")
+
                     all_lines.append(line)
 
         accruals = 0
         withdrawals = 0
 
         for line in all_lines:
+            line = line[:4]
+            rub = round(line[1] / cur_d1.get(line[0].month), 2)
+            line.append(rub)
+
             if line[2].lower() == "пополнение":
-                accruals += line[1]
+                accruals += line[4]
             else:
-                withdrawals += line[1]
+                withdrawals += line[4]
 
         accruals = round(accruals)
         withdrawals = round(withdrawals)
 
-        return f"Пополнения карты: {accruals} КЗТ\nРасходы по карте: {withdrawals} КЗТ"
+        return f"Пополнения карты: {accruals} rub\nРасходы по карте: {withdrawals} rub"
 
 
 res = open_pdf("kaspi_bank_DEC_2023/kaspi_bank_sep22-sep23.pdf")
