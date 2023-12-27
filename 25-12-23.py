@@ -1,7 +1,7 @@
 import PyPDF2
 from re import compile
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 def kzt_to_rub(path):
