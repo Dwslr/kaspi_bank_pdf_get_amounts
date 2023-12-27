@@ -30,7 +30,6 @@ def open_pdf(path):
         pages = len(pdf_reader.pages)
         # print(pages) # 21 pages
 
-        # Initialize an empty list to store lines of text
         all_lines = []
 
         # Define a regular expression pattern for the date format
@@ -48,7 +47,6 @@ def open_pdf(path):
                 if date_pattern.match(line):
                     line = [el.strip() for el in line.split("  ")]
                     line = line[0].split(" ", 1) + line[1:2] + line[4:]
-
                     # Remove non-numeric characters and replace comma with dot for decimal point
                     line[1] = "".join(
                         char for char in line[1] if char.isdigit() or char in ",."
@@ -56,7 +54,6 @@ def open_pdf(path):
                     line[1] = line[1].replace(",", ".")
                     # Convert the cleaned string to a float
                     line[1] = float(line[1])
-
                     line[0] = datetime.strptime(line[0], "%d.%m.%y")
 
                     all_lines.append(line)
@@ -65,7 +62,7 @@ def open_pdf(path):
         withdrawals = 0
 
         for line in all_lines:
-            line = line[:4]
+            line = line[:4]  # remove extra elements at the end of some lines
 
             rub = round(line[1] / curr_d1.get(line[0].strftime("%W-%Y")), 2)
             line.append(rub)
